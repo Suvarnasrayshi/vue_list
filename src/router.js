@@ -4,6 +4,8 @@ import pageNotFound from './components/pageNotFound.vue'
 import userDetails from './components/userDetails.vue'
  import Albums from './components/Albums.vue'
  import AlbumDetails from './components/AlbumDetails.vue'
+import PostForm from './components/PostForm.vue'
+
 const routes = [
   {
     name:'Users',
@@ -19,6 +21,11 @@ const routes = [
     name:'userDetails',
     path: '/users/:userId',
     component: userDetails
+  },
+  {
+    name: 'PostForm',
+    path: '/users/:userId/posts',
+    component: PostForm,
   },
   {
     name:'Albums',

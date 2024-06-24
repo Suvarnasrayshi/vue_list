@@ -5,6 +5,7 @@
         <ul>
           <li><router-link to="/">Users</router-link></li>
           <li><router-link to="/album">Albums</router-link></li>
+          <PostForm></PostForm>
         </ul>
       </nav>
     </header>

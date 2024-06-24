@@ -1,80 +1,88 @@
 <template>
-<div>
-  <h2>todo</h2>
-  <ul class="user-detail">
-    <li v-for="items in pagination" :key="items.id" class="todo-item">
-     {{ items.id }} {{ items.title}} - <strong :style="{color: items.completed ? '#28a745' : '#dc3545'}"  > {{ items.completed ? 'Completed' : 'Pending' }}</strong>
-
-    </li>
-  </ul>
-  <h2>post</h2>
-  <ul>
-    <li v-for="item in pagination" :key="item.id">
-      <strong>{{ item.title }}</strong>    -----
-     {{ item.id }} {{ item.body }}
-    </li>
-  </ul>
-  <button @click="nextpart" :disabled="!lastpagedetail" class="lastpage">More</button>
-  <!-- <button @click="nextpart" class="lastpage">More</button> -->
-</div>
+  <div>
+    <h2>Todo</h2>
+    <ul class="user-detail">
+      <router-link :to="{ name: 'PostForm' }">Posts</router-link>
+      <li v-for="item in paginatedTodos" :key="item.id" class="todo-item">
+        {{ item.id }} {{ item.title }} - 
+        <strong :style="{ color: item.completed ? '#28a745' : '#dc3545' }">
+          {{ item.completed ? 'Completed' : 'Pending' }}
+        </strong>
+      </li>
+    </ul>
+    <button @click="nextTodoPage" :disabled="!hasMoreTodos" class="lastpage">More Todos</button>
+    
+    <h2>Post</h2>
+    <ul>
+      <li v-for="item in paginatedPosts" :key="item.id">
+        <strong>{{ item.title }}</strong> ----- {{ item.id }} {{ item.body }}
+        <PostForm :userID=item.id />
+      </li>
+    </ul>
+    <button @click="nextPostPage" :disabled="!hasMorePosts" class="lastpage">More Posts</button>
+  </div>
 </template>
+
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import PostForm from "./PostForm.vue"
 
-const route = useRoute()
-// console.log("object",route.params.userId);
-const todo =ref([]);
-const post =ref([])
-const start =ref([]);
-const last =2;
-const userId=route.params.userId;
-console.log("userid",userId);
+const route = useRoute();
+const userId = route.params.userId;
 
+const todos = ref([]);
+const posts = ref([]);
 
-onMounted(async()=>{
-  const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}/todos`);
-  todo.value = await response.json();
-  console.log('object',todo.value);
+const todoPage = ref(0);
+const postPage = ref(0);
+const itemsPerPage = 5;
 
+onMounted(async () => {
+  const responseTodos = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}/todos`);
+  todos.value = await responseTodos.json();
 
-  const responsepost =await fetch(`https://jsonplaceholder.typicode.com/users/${userId}/posts`);
-  post.value =await responsepost.json();
-  console.log("postdata",post.value)
-})
+  const responsePosts = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}/posts`);
+  posts.value = await responsePosts.json();
+});
 
-const pagination=computed(()=>{
-  const startpage = start.value*last
-return todo.value.slice(startpage,startpage+last),post.value.slice(startpage,startpage+last)
-})
+const paginatedTodos = computed(() => {
+  const start = todoPage.value * itemsPerPage;
+  return todos.value.slice(start, start + itemsPerPage);
+});
 
+const paginatedPosts = computed(() => {
+  const start = postPage.value * itemsPerPage;
+  return posts.value.slice(start, start + itemsPerPage);
+});
 
-// const lastpagedetail= computed(()=>{
-//   const lastdata =(start.value+1)*last
-// console.log("lastdata",lastdata);
-// console.log("todo",todo.value.length);
-// console.log("post",post.value.length);
+const hasMoreTodos = computed(() => {
+  return (todoPage.value + 1) * itemsPerPage < todos.value.length;
+});
 
-// if(lastdata){
-//   if(todo.value.length>post.value.length){
+const hasMorePosts = computed(() => {
+  return (postPage.value + 1) * itemsPerPage < posts.value.length;
+});
 
-//     return lastdata>todo.value.length
-//   }
-// }
-// return lastdata>post.value.length
+const nextTodoPage = () => {
+  if (hasMoreTodos.value) {
+    todoPage.value += 1;
+  }
+};
 
-// })
-const nextpart=()=>{
-// if(lastpagedetail.value){
-start.value+=1
-}
-// }
+const nextPostPage = () => {
+  if (hasMorePosts.value) {
+    postPage.value += 1;
+  }
+};
 </script>
+
 <style scoped>
-.user-detail{
+.user-detail {
   list-style-type: none;
   padding: 0;
 }
+
 .todo-item {
   background-color: #fff;
   margin-bottom: 10px;
@@ -82,18 +90,16 @@ start.value+=1
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.lastpage{
+.lastpage {
   background-color: #333;
   color: white;
   border: none;
   padding: 5px 10px;
   cursor: pointer;
 }
+
 button[disabled] {
-  background-color: #333;
-  color: white;
-  border: none;
-  padding: 5px 10px;
+  background-color: #999;
   cursor: not-allowed;
 }
 </style>
