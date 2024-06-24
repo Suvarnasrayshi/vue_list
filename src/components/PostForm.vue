@@ -28,7 +28,7 @@
  const props = defineProps({
    userId: Number,
  });
-console.log("id"+props.userId);
+
 
  const title = ref('');
  const body = ref('');
@@ -40,6 +40,8 @@ console.log("id"+props.userId);
      userId: props.userId,
     };
 console.log("newpost-",newPost);
+console.log("userid"+props.userId);
+
    const response = await fetch('https:jsonplaceholder.typicode.com/posts', {
      method: 'POST',
      headers: {

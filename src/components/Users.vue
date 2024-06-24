@@ -17,7 +17,7 @@ const user =ref([]);
 onMounted(async()=>{
   const response = await fetch('https://jsonplaceholder.typicode.com/users');
   user.value = await response.json();
-  // console.log('object',user.value);
+  console.log('object',user.value);
 })
 
 const gettodo =(userId)=>{

@@ -15,8 +15,8 @@
     <h2>Post</h2>
     <ul>
       <li v-for="item in paginatedPosts" :key="item.id">
+        <PostForm :userId="item.userId"/>
         <strong>{{ item.title }}</strong> ----- {{ item.id }} {{ item.body }}
-        <PostForm :userID=item.id />
       </li>
     </ul>
     <button @click="nextPostPage" :disabled="!hasMorePosts" class="lastpage">More Posts</button>
@@ -36,7 +36,7 @@ const posts = ref([]);
 
 const todoPage = ref(0);
 const postPage = ref(0);
-const itemsPerPage = 5;
+const itemsPerPage = 1;
 
 onMounted(async () => {
   const responseTodos = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}/todos`);
@@ -44,6 +44,7 @@ onMounted(async () => {
 
   const responsePosts = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}/posts`);
   posts.value = await responsePosts.json();
+  console.log(posts.value);
 });
 
 const paginatedTodos = computed(() => {
