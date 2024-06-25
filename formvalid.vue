@@ -6,12 +6,13 @@
       <span v-if="v$.email.$error">Email is required and must be valid</span>
     </p>
     <p>
-      <input type="password" name="password" id="password" placeholder="Password" v-model="formData.password"
-        @blur="v$.password.$touch()" />
+      <input type="text" name="password" id="password" placeholder="Password" v-model="formData.password"
+        @blur="v$.password.$touch" />
       <span v-if="v$.password.$error">Password is required and must be at least 2 characters</span>
+      <span v-if="v$.password.hasNumber"><p @blur="v$.password.$touch">number required</p></span>
     </p>
     <p>
-      <input type="password" name="confirm" id="confirm" placeholder="Confirm Password" v-model="formData.confirm"
+      <input type="text" name="confirm" id="confirm" placeholder="Confirm Password" v-model="formData.confirm"
         @blur="v$.confirm.$touch()" />
       <span v-if="v$.confirm.$error">Confirmation is required and must match the password</span>
     </p>
@@ -45,9 +46,9 @@
 
 <script setup>
 import { useVuelidate } from '@vuelidate/core'
-import { required, email, minLength, helpers } from '@vuelidate/validators'
+import { required, email, minLength } from '@vuelidate/validators'
 import { reactive } from 'vue'
-
+import {hasNumber} from '../validation.js'
 const formData = reactive({
   email: '',
   password: '',
@@ -57,11 +58,10 @@ const formData = reactive({
   hobbies: []
 })
 
-const mustbeemail =(value)=>value.includes('learn')
 
 const rules = {
-  email: { required, email,mustbeemail:helpers.withMessage('hello',mustbeemail) },
-  password: { required, minLength: minLength(2) },
+  email:{required,email},
+  password: { required, minLength: minLength(2),hasNumber },
   confirm: { required},
   bool: { required },
   car: { required },
@@ -71,13 +71,13 @@ const rules = {
 const v$ = useVuelidate(rules, formData)
 
 const submitdata = async () => {
-  // const result =
+  const result =
    await v$.value.$validate()
-  // if (result) {
-  //   alert('Success')
-  // } else {
-  //   alert('Error')
-  // }
+  if (result) {
+    alert('Success')
+  } else {
+    alert('Error')
+  }
 }
 </script>
 
